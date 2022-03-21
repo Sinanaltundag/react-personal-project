@@ -49,7 +49,8 @@ function App() {
       {!isFetchOk && <div>Loading</div>}
       {isFetchOk && (
         <div>
-          <h2>Total result {persons.total}</h2>
+        <h1 style={{"textAlign":"center", "color": "red"}}>Personal Page</h1>
+          <h2 style={{"textAlign":"center"}}>Total result {persons.total}</h2>
 
           <Row xs={1} md={2} lg={3} className="g-4">
             {persons.data.map((item) => (
