@@ -2,15 +2,16 @@ import "./App.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Person from "./components/person";
-import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/esm/Button";
+const url = `https://reqres.in/api/users?page=`;
 
 function App() {
   let [persons, setPersons] = useState([]);
+  let [personList, setPersonList] = useState([]);
   let [isFetchOk, setIsFetchOk] = useState(false);
-  const [page, setPage] = useState(1);
+  let [page, setPage] = useState(1);
 
   const nextPage = () => {
     if (page < persons.total / 6) {
@@ -23,40 +24,52 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    const fetchPersons = async () => {
-      setIsFetchOk(false);
-      try {
-        const url = `https://reqres.in/api/users?page=${page}`;
-        const response = await axios.get(url);
-        if (response.status !== 200) {
-          setIsFetchOk(false);
-          console.log(response.status);
+  const fetchPersons = async () => {
+    setIsFetchOk(false);
+    try {
+      const response = await axios.get(`${url}${page}`);
+      if (response.status !== 200) {
+        setIsFetchOk(false);
+        // console.log(response.status);
 
-          return;
-        }
-        console.log(response.data);
-        setPersons(response.data);
-      } catch (error) {
-        console.log(error);
+        return;
       }
-      setIsFetchOk(true);
-    };
+      // console.log(response.data.data);
+      setPersons(response.data);
+      console.log(persons);
+      setPersonList(response.data.data);
+      // console.log(personList)
+    } catch (error) {
+      console.log(error);
+    }
+    setIsFetchOk(true);
+  };
+
+  useEffect(() => {
     fetchPersons();
   }, [page]);
+  const deletePerson = (personId) => {
+    // console.log(person);
+    let newPersons = personList.filter((p) => p.id !== personId);
+    console.log(newPersons);
+    // setPersons(newPersons);
+    // console.log(page);
+    setPersonList(newPersons);
+  };
+
   return (
     <Container>
       {!isFetchOk && <div>Loading</div>}
       {isFetchOk && (
         <div>
-        <h1 style={{"textAlign":"center", "color": "red"}}>Personal Page</h1>
-          <h2 style={{"textAlign":"center"}}>Total result {persons.total}</h2>
+          <h1 style={{ textAlign: "center", color: "red" }}>Personal Page</h1>
+          <h2 style={{ textAlign: "center" }}>Total result {persons.total}</h2>
 
-          <Row xs={1} md={2} lg={3} className="g-4">
-            {persons.data.map((item) => (
-              <Person as={Col} personProp={item} key={item.id} />
-            ))}
-          </Row>
+          <Person
+            as={Col}
+            personProp={personList}
+            deletePersonProp={deletePerson}
+          />
         </div>
       )}
       <Container className="justify-content-center d-lg-flex">
