@@ -29,6 +29,7 @@ function Person(props) {
           </Card>
         </Col>
       ))}
+      {/* <Card {...props} /> */}
     </Row>
   );
 }

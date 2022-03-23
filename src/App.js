@@ -5,16 +5,19 @@ import Person from "./components/person";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/esm/Button";
+import SearchBar from "./components/SearchBar";
 const url = `https://reqres.in/api/users?page=`;
 
 function App() {
-  let [persons, setPersons] = useState([]);
+  let [totalPersons, setTotalPersons] = useState(0);
   let [personList, setPersonList] = useState([]);
   let [isFetchOk, setIsFetchOk] = useState(false);
   let [page, setPage] = useState(1);
+  let [search,setSearch]= useState("");
+
 
   const nextPage = () => {
-    if (page < persons.total / 6) {
+    if (page < totalPersons / 6) {
       setPage(page + 1);
     }
   };
@@ -35,8 +38,10 @@ function App() {
         return;
       }
       // console.log(response.data.data);
-      setPersons(response.data);
-      console.log(persons);
+      if (totalPersons===0) {
+        setTotalPersons(response.data.total);
+      }
+      
       setPersonList(response.data.data);
       // console.log(personList)
     } catch (error) {
@@ -48,26 +53,33 @@ function App() {
   useEffect(() => {
     fetchPersons();
   }, [page]);
-  const deletePerson = (personId) => {
-    // console.log(person);
-    let newPersons = personList.filter((p) => p.id !== personId);
-    console.log(newPersons);
-    // setPersons(newPersons);
-    // console.log(page);
-    setPersonList(newPersons);
-  };
 
+
+  const deletePerson = (personId) => {
+    let newPersonList = personList.filter((p) => p.id !== personId);
+    console.log(newPersonList);
+    setPersonList(newPersonList);
+    setTotalPersons(+totalPersons-1)
+  };
+ const searchPerson = (event) => {
+// console.log(event.target.value)
+setSearch(event.target.value)
+ }
+ let filteredPersons= personList.filter((p) => {
+   return p.first_name.toLowerCase().indexOf(search.toLowerCase()) !== -1
+ })
   return (
     <Container>
+    <SearchBar search={searchPerson}/>
       {!isFetchOk && <div>Loading</div>}
       {isFetchOk && (
         <div>
           <h1 style={{ textAlign: "center", color: "red" }}>Personal Page</h1>
-          <h2 style={{ textAlign: "center" }}>Total result {persons.total}</h2>
+          <h2 style={{ textAlign: "center" }}>Total result {totalPersons}</h2>
 
           <Person
             as={Col}
-            personProp={personList}
+            personProp={filteredPersons}
             deletePersonProp={deletePerson}
           />
         </div>
