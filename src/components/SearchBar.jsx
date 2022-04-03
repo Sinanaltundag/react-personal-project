@@ -1,4 +1,4 @@
-
+import { useCallback } from "react";
 const SearchBar = (props) => {
 
 // let [search,setSearch]= useState("")
@@ -7,6 +7,14 @@ const SearchBar = (props) => {
 const handleFormSubmit=(e)=>{
 e.preventDefault();
 }
+const onClickEvent = useCallback(
+  (e) => {
+    console.log(e.target);
+    
+  },
+  [],
+)
+
   return (
     <div>
     
@@ -29,7 +37,7 @@ e.preventDefault();
             />
           </div>
           <div className="col-auto">
-            <button className="btn btn-primary" type="submit" >
+            <button className="btn btn-primary" type="submit" onClick={onClickEvent.bind(this)}>
               Submit
             </button>
           </div>
